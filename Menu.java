@@ -10,10 +10,11 @@ public class Menu {
         "Hamburger",
         "French Fries",
         "Soft Drinks"
+        "Pizza"
     };
 
     public static double[] prices = {
-        120, 100, 130, 150, 80, 75, 50, 25
+        120, 100, 100, 130, 150, 80, 75, 50, 25
     };
 
     public static void displayMenu() {
