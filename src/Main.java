@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 
 public class Main {
@@ -9,6 +10,11 @@ public class Main {
         System.out.println("       LING'S RESTAURANT");
         System.out.println("       RESTAURANT ORDERING SYSTEM");
         System.out.println("======================================");
+
+        System.out.print("Enter customer name: ");
+        String customerName = input.nextLine();
+
+        System.out.println("\nWelcome, " + customerName + "!");
 
         boolean running = true;
 
@@ -40,9 +46,9 @@ public class Main {
             System.out.println("Order successfully added!");
         }
 
-        order.displayReceipt();
+        order.displayReceipt(customerName);
 
-        System.out.println("Thank you for visiting LING'S RESTAURANT!");
+        System.out.println("\nThank you for visiting LING'S RESTAURANT!");
         input.close();
     }
 }
