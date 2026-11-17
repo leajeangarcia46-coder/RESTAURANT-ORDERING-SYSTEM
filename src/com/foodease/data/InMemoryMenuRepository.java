@@ -8,11 +8,12 @@ import java.util.Optional;
 
 public class InMemoryMenuRepository implements MenuRepository {
     private final List<MenuItem> items = List.of(
-        new MenuItem("1", "Classic Burger", MenuCategory.BURGERS, new BigDecimal("8.99")),
-        new MenuItem("2", "Cheeseburger", MenuCategory.BURGERS, new BigDecimal("9.99")),
-        new MenuItem("3", "French Fries", MenuCategory.SIDES, new BigDecimal("3.49")),
-        new MenuItem("4", "Soft Drink", MenuCategory.DRINKS, new BigDecimal("1.99")),
-        new MenuItem("5", "Chocolate Sundae", MenuCategory.DESSERTS, new BigDecimal("4.25"))
+        new MenuItem("1", "Paracetamol 500 mg (10s)", MenuCategory.OTC_MEDICINES, new BigDecimal("25.00")),
+        new MenuItem("2", "Oral Rehydration Salts", MenuCategory.OTC_MEDICINES, new BigDecimal("18.00")),
+        new MenuItem("3", "Vitamin C 500 mg (10s)", MenuCategory.VITAMINS, new BigDecimal("35.00")),
+        new MenuItem("4", "Adhesive Bandages (10s)", MenuCategory.FIRST_AID, new BigDecimal("22.00")),
+        new MenuItem("5", "70% Isopropyl Alcohol (250 ml)", MenuCategory.FIRST_AID, new BigDecimal("48.00")),
+        new MenuItem("6", "Surgical Face Masks (5s)", MenuCategory.PERSONAL_CARE, new BigDecimal("30.00"))
     );
 
     @Override public List<MenuItem> findAll() { return items; }
