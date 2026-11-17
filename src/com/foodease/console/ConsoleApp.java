@@ -24,11 +24,15 @@ public class ConsoleApp {
 
         int typeChoice;
         while (true) {
-            typeChoice = input.readInt("Purchase type (1 in-store, 2 pickup): ");
+            typeChoice = input.readInt("Order type (1 dine-in, 2 takeout): ");
             if (typeChoice == 1 || typeChoice == 2) break;
-            output.print("Choose 1 for in-store or 2 for pickup.");
+            output.print("Choose 1 for dine-in or 2 for takeout.");
         }
-        Order order = orderService.createOrder(name, typeChoice == 1 ? OrderType.DINE_IN : OrderType.TAKEOUT);
+        OrderType type = typeChoice == 1 ? OrderType.DINE_IN : OrderType.TAKEOUT;
+        String tableNumber = type == OrderType.DINE_IN
+                ? Integer.toString(input.readPositiveInt("Table number: ")) : "";
+        Order order = orderService.createOrder(name, type, tableNumber);
+        order.setSpecialInstructions(input.readLine("Kitchen instructions (optional): "));
 
         while (true) {
             output.showOrderActions();
@@ -52,7 +56,7 @@ public class ConsoleApp {
 
     private void addItem(Order order) {
         output.showMenu(orderService.getMenu());
-        String choice = input.readLine("Product number (or B to go back): ");
+        String choice = input.readLine("Menu item number (or B to go back): ");
         if (choice.equalsIgnoreCase("B")) return;
         try {
             MenuItem item = orderService.getMenuItem(choice);
@@ -94,7 +98,7 @@ public class ConsoleApp {
             java.math.BigDecimal tendered = order.total();
             if (method.equalsIgnoreCase("cash")) {
                 while (true) {
-                    String amount = input.readLine("Cash received (PHP): ");
+                    String amount = input.readLine("Cash received: ");
                     try {
                         tendered = new java.math.BigDecimal(amount);
                         if (tendered.compareTo(order.total()) >= 0) break;
@@ -107,7 +111,7 @@ public class ConsoleApp {
             try {
                 Receipt receipt = orderService.checkout(order, method, tendered);
                 output.showReceipt(receipt, order);
-                output.print("Thank you for choosing MediCare Pharmacy.");
+                output.print("Thank you for dining with FoodEase!");
                 return true;
             } catch (IllegalArgumentException ex) {
                 output.print(ex.getMessage());
