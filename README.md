@@ -18,6 +18,6 @@ java -cp build/classes com.foodease.Main
 
 ## Order flow
 
-Enter a customer name and choose in-store or pickup. Use **A** to add products, **V** to review the order, **R** to remove a product, **C** to check out, or **X** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt. Prices display in Philippine pesos.
+Enter a customer name and choose in-store or pickup. Use **1** to add products, **2** to review the order, **3** to remove a product, **4** to check out, or **5** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt. Prices display in Philippine pesos.
 
 Product data is held in memory in `InMemoryMenuRepository` and resets when the application exits. The app does not manage prescription verification, inventory, or expiry tracking.
