@@ -8,11 +8,21 @@ import java.util.Objects;
 public class Order {
     private final Customer customer;
     private final OrderType type;
+    private final String tableNumber;
     private final List<OrderItem> items = new ArrayList<>();
+    private String specialInstructions = "";
 
     public Order(Customer customer, OrderType type) {
+        this(customer, type, type == OrderType.DINE_IN ? "Walk-in" : "");
+    }
+
+    public Order(Customer customer, OrderType type, String tableNumber) {
         this.customer = Objects.requireNonNull(customer);
         this.type = Objects.requireNonNull(type);
+        this.tableNumber = tableNumber == null ? "" : tableNumber.trim();
+        if (type == OrderType.DINE_IN && this.tableNumber.isEmpty()) {
+            throw new IllegalArgumentException("A table number is required for dine-in orders");
+        }
     }
 
     public void addItem(MenuItem item, int quantity) {
@@ -37,6 +47,11 @@ public class Order {
 
     public Customer customer() { return customer; }
     public OrderType type() { return type; }
+    public String tableNumber() { return tableNumber; }
+    public String specialInstructions() { return specialInstructions; }
+    public void setSpecialInstructions(String specialInstructions) {
+        this.specialInstructions = specialInstructions == null ? "" : specialInstructions.trim();
+    }
     public List<OrderItem> items() { return List.copyOf(items); }
     public BigDecimal total() {
         return items.stream().map(OrderItem::subtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
