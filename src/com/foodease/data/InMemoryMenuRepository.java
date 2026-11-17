@@ -8,12 +8,14 @@ import java.util.Optional;
 
 public class InMemoryMenuRepository implements MenuRepository {
     private final List<MenuItem> items = List.of(
-        new MenuItem("1", "Paracetamol 500 mg (10s)", MenuCategory.OTC_MEDICINES, new BigDecimal("25.00")),
-        new MenuItem("2", "Oral Rehydration Salts", MenuCategory.OTC_MEDICINES, new BigDecimal("18.00")),
-        new MenuItem("3", "Vitamin C 500 mg (10s)", MenuCategory.VITAMINS, new BigDecimal("35.00")),
-        new MenuItem("4", "Adhesive Bandages (10s)", MenuCategory.FIRST_AID, new BigDecimal("22.00")),
-        new MenuItem("5", "70% Isopropyl Alcohol (250 ml)", MenuCategory.FIRST_AID, new BigDecimal("48.00")),
-        new MenuItem("6", "Surgical Face Masks (5s)", MenuCategory.PERSONAL_CARE, new BigDecimal("30.00"))
+        new MenuItem("1", "Lumpiang Shanghai (6 pcs)", MenuCategory.APPETIZERS, new BigDecimal("75.00")),
+        new MenuItem("2", "Chicken Adobo", MenuCategory.MAIN_COURSES, new BigDecimal("120.00")),
+        new MenuItem("3", "Pork Sinigang", MenuCategory.MAIN_COURSES, new BigDecimal("150.00")),
+        new MenuItem("4", "Pancit Canton", MenuCategory.MAIN_COURSES, new BigDecimal("110.00")),
+        new MenuItem("5", "Garlic Rice", MenuCategory.SIDES, new BigDecimal("25.00")),
+        new MenuItem("6", "French Fries", MenuCategory.SIDES, new BigDecimal("65.00")),
+        new MenuItem("7", "Iced Tea", MenuCategory.BEVERAGES, new BigDecimal("35.00")),
+        new MenuItem("8", "Halo-Halo", MenuCategory.DESSERTS, new BigDecimal("95.00"))
     );
 
     @Override public List<MenuItem> findAll() { return items; }
