@@ -1,6 +1,6 @@
-# Restaurant Ordering System
+# MediCare Pharmacy Customer Order System
 
-A Java 21 console application for viewing a menu, placing restaurant orders, and calculating payments. It helps staff manage customer orders and checkout.
+A Java 21 console application with a pharmacy-style product catalog and checkout. The sample catalog and prices are for demonstration; product and payment operations remain the same as before.
 
 ## Run in NetBeans
 
@@ -18,6 +18,6 @@ java -cp build/classes com.foodease.Main
 
 ## Order flow
 
-Enter a customer name and choose dine-in or takeout. Use **A** to add menu items, **V** to review the cart, **R** to remove an item, **C** to check out, or **X** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt.
+Enter a customer name and choose in-store or pickup. Use **A** to add products, **V** to review the order, **R** to remove a product, **C** to check out, or **X** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt. Prices display in Philippine pesos.
 
-Menu data is held in memory in `InMemoryMenuRepository` and resets when the application exits.
+Product data is held in memory in `InMemoryMenuRepository` and resets when the application exits. The app does not manage prescription verification, inventory, or expiry tracking.
