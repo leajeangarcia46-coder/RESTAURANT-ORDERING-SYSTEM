@@ -9,16 +9,16 @@ public class ConsoleOutput {
 
     public void showWelcome() {
         System.out.println("============================================================");
-        System.out.println("                    MEDICARE PHARMACY");
-        System.out.println("                 CUSTOMER ORDER SYSTEM");
+        printCentered("MEDICARE PHARMACY");
+        printCentered("PHARMACY ORDERING & CHECKOUT");
         System.out.println("============================================================");
-        System.out.println("Sample catalog and demo prices | All prices in Philippine pesos");
+        System.out.println("Your health and wellness, made easy.");
     }
 
     public void showOrderActions() {
         System.out.println("\n---------------------- ORDER OPTIONS -----------------------");
-        System.out.println("A) Add product    V) View order    R) Remove product");
-        System.out.println("C) Checkout       X) Cancel");
+        System.out.println("1) Add product     2) View order     3) Remove product");
+        System.out.println("4) Checkout        5) Cancel");
     }
 
     public void showMenu(Iterable<MenuItem> items) {
@@ -29,7 +29,6 @@ public class ConsoleOutput {
             System.out.printf("%-4s %-36s %-18s %10s%n", item.id(), item.name(),
                     categoryLabel(item.category()), currency.format(item.price()));
         System.out.println("============================================================");
-        System.out.println("Demo catalog only. Confirm product suitability with a pharmacist.");
     }
 
     public void showReceipt(Receipt receipt, Order order) {
@@ -87,6 +86,11 @@ public class ConsoleOutput {
     private String capitalize(String value) {
         if (value.isEmpty()) return value;
         return value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1);
+    }
+
+    private void printCentered(String text) {
+        int leftPadding = Math.max(0, (60 - text.length()) / 2);
+        System.out.println(" ".repeat(leftPadding) + text);
     }
 
     public void print(String message) { System.out.println(message); }
