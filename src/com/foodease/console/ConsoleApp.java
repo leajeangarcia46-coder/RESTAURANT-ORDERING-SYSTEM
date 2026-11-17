@@ -32,20 +32,20 @@ public class ConsoleApp {
 
         while (true) {
             output.showOrderActions();
-            String action = input.readLine("Select an option: ");
+            String action = input.readLine("Select an option (1-5): ");
             switch (action.toUpperCase()) {
-                case "A" -> addItem(order);
-                case "V" -> output.showCart(order);
-                case "R" -> removeItem(order);
-                case "C" -> {
+                case "1" -> addItem(order);
+                case "2" -> output.showCart(order);
+                case "3" -> removeItem(order);
+                case "4" -> {
                     if (order.items().isEmpty()) output.print("Add at least one item before checkout.");
                     else if (checkout(order)) return;
                 }
-                case "X" -> {
+                case "5" -> {
                     output.print("Order cancelled.");
                     return;
                 }
-                default -> output.print("Select A, V, R, C, or X.");
+                default -> output.print("Enter a number from 1 to 5.");
             }
         }
     }
