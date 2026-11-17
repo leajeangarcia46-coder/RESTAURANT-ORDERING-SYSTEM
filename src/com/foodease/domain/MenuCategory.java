@@ -1,5 +1,5 @@
 package com.foodease.domain;
 
 public enum MenuCategory {
-    OTC_MEDICINES, VITAMINS, FIRST_AID, PERSONAL_CARE
+    APPETIZERS, MAIN_COURSES, SIDES, BEVERAGES, DESSERTS
 }
