@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class ConsoleOutput {
+    private static final int CONSOLE_WIDTH = 60;
     private static final int MENU_NAME_WIDTH = 34;
     private static final int CATEGORY_WIDTH = 16;
     private static final int PRICE_WIDTH = 14;
@@ -24,9 +25,13 @@ public class ConsoleOutput {
     }
 
     public void showOrderActions() {
-        System.out.println("\n---------------------- ORDER OPTIONS -----------------------");
-        System.out.println("1) Add item        2) View order     3) Remove item");
-        System.out.println("4) Checkout        5) Cancel");
+        System.out.println();
+        printFrameBorder();
+        printFrameLine("ORDER OPTIONS");
+        printFrameBorder();
+        printFrameLine("1) Add item     2) View order     3) Remove item");
+        printFrameLine("4) Checkout     5) Cancel");
+        printFrameBorder();
     }
 
     public void showMenu(Iterable<MenuItem> items) {
@@ -70,7 +75,10 @@ public class ConsoleOutput {
     }
 
     public void showCart(Order order) {
-        System.out.println("\n------------------------- YOUR ORDER -----------------------");
+        System.out.println();
+        printFrameBorder();
+        printFrameLine("CURRENT ORDER");
+        printFrameBorder();
         System.out.println("Type: " + orderTypeLabel(order.type()));
         if (order.type() == OrderType.DINE_IN) {
             System.out.println("Table: " + order.tableNumber());
@@ -80,14 +88,18 @@ public class ConsoleOutput {
         }
         if (order.items().isEmpty()) {
             System.out.println("No items have been added yet.");
+            printFrameBorder();
             return;
         }
+        System.out.println("------------------------------------------------------------");
         int number = 1;
         for (OrderItem item : order.items()) {
             System.out.printf("%d. %-36s x%d  %s%n", number++, item.menuItem().name(),
                     item.quantity(), formatCurrency(item.subtotal()));
         }
+        System.out.println("------------------------------------------------------------");
         showTotal(order.total());
+        printFrameBorder();
     }
 
     public void showTotal(java.math.BigDecimal total) {
@@ -114,8 +126,22 @@ public class ConsoleOutput {
     }
 
     private void printCentered(String text) {
-        int leftPadding = Math.max(0, (60 - text.length()) / 2);
+        int leftPadding = Math.max(0, (CONSOLE_WIDTH - text.length()) / 2);
         System.out.println(" ".repeat(leftPadding) + text);
+    }
+
+    private void printFrameBorder() {
+        System.out.println("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+");
+    }
+
+    private void printFrameLine(String text) {
+        int insideWidth = CONSOLE_WIDTH - 2;
+        int visibleLength = Math.min(text.length(), insideWidth);
+        String visibleText = text.substring(0, visibleLength);
+        int leftPadding = (insideWidth - visibleLength) / 2;
+        int rightPadding = insideWidth - visibleLength - leftPadding;
+        System.out.println("|" + " ".repeat(leftPadding) + visibleText
+                + " ".repeat(rightPadding) + "|");
     }
 
     private void printMenuBorder() {
