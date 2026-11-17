@@ -17,6 +17,9 @@ public class OrderService {
     public Order createOrder(String customerName, OrderType type) {
         return new Order(new Customer(customerName), type);
     }
+    public Order createOrder(String customerName, OrderType type, String tableNumber) {
+        return new Order(new Customer(customerName), type, tableNumber);
+    }
     public Receipt checkout(Order order, String method) {
         return checkout(order, method, order.total());
     }
