@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class ConsoleOutput {
-    private static final int CONSOLE_WIDTH = 60;
+    public static final int CONSOLE_WIDTH = 60;
     private static final int MENU_NAME_WIDTH = 34;
     private static final int CATEGORY_WIDTH = 16;
     private static final int PRICE_WIDTH = 14;
@@ -21,7 +21,16 @@ public class ConsoleOutput {
         printCentered("FOODEASE RESTAURANT");
         printCentered("ORDERING & CHECKOUT");
         System.out.println("============================================================");
-        System.out.println("Welcome! Start a new dine-in or takeout order.");
+        printFrameBorder();
+        printFrameLine("Welcome! Start a new dine-in or takeout order.");
+    }
+
+    public void closeOrderSetup() {
+        printFrameBorder();
+    }
+
+    public void printFrameMessage(String message) {
+        printFrameLine(message);
     }
 
     public void showOrderActions() {
