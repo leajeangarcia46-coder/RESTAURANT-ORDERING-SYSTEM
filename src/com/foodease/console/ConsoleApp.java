@@ -2,11 +2,14 @@ package com.foodease.console;
 
 import com.foodease.application.OrderService;
 import com.foodease.domain.*;
+import java.awt.HeadlessException;
+import java.awt.print.PrinterException;
 
 public class ConsoleApp {
     private final ConsoleInput input;
     private final ConsoleOutput output;
     private final OrderService orderService;
+    private final ReceiptPrinter receiptPrinter = new ReceiptPrinter();
 
     public ConsoleApp(ConsoleInput input, ConsoleOutput output, OrderService orderService) {
         this.input = input;
@@ -116,11 +119,26 @@ public class ConsoleApp {
             try {
                 Receipt receipt = orderService.checkout(order, method, tendered);
                 output.showReceipt(receipt, order);
+                printReceiptIfRequested(receipt, order);
                 output.print("Thank you for dining with FoodEase!");
                 return true;
             } catch (IllegalArgumentException ex) {
                 output.print(ex.getMessage());
             }
+        }
+    }
+
+    private void printReceiptIfRequested(Receipt receipt, Order order) {
+        String choice = input.readLine("Print a paper receipt? (Y/N): ");
+        if (!choice.equalsIgnoreCase("Y")) return;
+        try {
+            if (receiptPrinter.printReceipt(receipt, order)) {
+                output.print("Receipt sent to the selected printer.");
+            } else {
+                output.print("Receipt printing cancelled.");
+            }
+        } catch (PrinterException | HeadlessException ex) {
+            output.print("Could not print receipt: " + ex.getMessage());
         }
     }
 }
