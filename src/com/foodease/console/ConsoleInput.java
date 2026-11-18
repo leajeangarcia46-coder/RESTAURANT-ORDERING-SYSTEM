@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class ConsoleInput {
     private final Scanner scanner = new Scanner(System.in);
     public String readLine(String prompt) {
-        System.out.print(prompt);
+        System.out.print(ConsoleTheme.sage(prompt));
         return scanner.nextLine().trim();
     }
 
