@@ -32,7 +32,6 @@ public class ConsoleApp {
         String tableNumber = type == OrderType.DINE_IN
                 ? Integer.toString(input.readPositiveInt("Table number: ")) : "";
         Order order = orderService.createOrder(name, type, tableNumber);
-        order.setSpecialInstructions(input.readLine("Kitchen instructions (optional): "));
         output.showOrderSetup(order);
 
         while (true) {
