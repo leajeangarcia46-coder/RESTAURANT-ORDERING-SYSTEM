@@ -10,7 +10,6 @@ public class Order {
     private final OrderType type;
     private final String tableNumber;
     private final List<OrderItem> items = new ArrayList<>();
-    private String specialInstructions = "";
 
     public Order(Customer customer, OrderType type) {
         this(customer, type, type == OrderType.DINE_IN ? "Walk-in" : "");
@@ -48,10 +47,6 @@ public class Order {
     public Customer customer() { return customer; }
     public OrderType type() { return type; }
     public String tableNumber() { return tableNumber; }
-    public String specialInstructions() { return specialInstructions; }
-    public void setSpecialInstructions(String specialInstructions) {
-        this.specialInstructions = specialInstructions == null ? "" : specialInstructions.trim();
-    }
     public List<OrderItem> items() { return List.copyOf(items); }
     public BigDecimal total() {
         return items.stream().map(OrderItem::subtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
