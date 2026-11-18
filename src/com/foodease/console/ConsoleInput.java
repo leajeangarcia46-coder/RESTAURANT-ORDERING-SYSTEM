@@ -6,13 +6,11 @@ public class ConsoleInput {
     private final Scanner scanner = new Scanner(System.in);
 
     public String readCustomerName() {
-        CenteredConsole.printCustomerPrompt("Customer name: ");
-        return scanner.nextLine().trim();
+        return readLine("Customer name: ");
     }
 
     public String readLine(String prompt) {
-        System.out.print(ConsoleTheme.sage(prompt));
-        System.out.flush();
+        ConsoleOutput.showInputPrompt(prompt);
         return scanner.nextLine().trim();
     }
 
