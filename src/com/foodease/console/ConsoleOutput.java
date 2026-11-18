@@ -27,14 +27,12 @@ public class ConsoleOutput {
         System.out.println(ConsoleTheme.rose("| ") + ConsoleTheme.sage(String.format("%-" + innerWidth + "s", label))
                 + ConsoleTheme.rose(" |"));
         System.out.println(ConsoleTheme.rose("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+"));
-        System.out.print(ConsoleTheme.sage("> "));
-        System.out.flush();
+        CenteredConsole.printPromptMarker();
     }
 
     public void showWelcome() {
-        CenteredConsole.beginWelcome(8);
+        CenteredConsole.beginWelcome(19);
         drawWelcome();
-        CenteredConsole.finishWelcome();
     }
 
     private void drawWelcome() {
@@ -182,33 +180,59 @@ public class ConsoleOutput {
         printFrameBorder();
         printFrameLine("CURRENT ORDER");
         printFrameBorder();
-        System.out.println("Type: " + orderTypeLabel(order.type()));
+        printLeftFrameLine("Order type: " + orderTypeLabel(order.type()));
         if (order.type() == OrderType.DINE_IN) {
-            System.out.println("Table: " + order.tableNumber());
+            printLeftFrameLine("Table: " + order.tableNumber());
         }
+        printFrameSeparator();
+        printFrameLine("ORDER ITEMS");
         if (order.items().isEmpty()) {
-            System.out.println("No items have been added yet.");
+            printLeftFrameLine("No items have been added yet.");
+            printFrameSeparator();
+            showBill(bill);
             printFrameBorder();
             return;
         }
-        System.out.println("------------------------------------------------------------");
         int number = 1;
         for (OrderItem item : order.items()) {
-            System.out.printf("%d. %-28s %3d x %10s = %10s%n", number++, item.menuItem().name(),
-                    item.quantity(), formatCurrency(item.unitPrice()), formatCurrency(item.subtotal()));
-            if (!item.note().isBlank()) System.out.println("   Note: " + item.note());
+            printWrappedFrameLines(number++ + ") " + item.menuItem().name());
+            printLeftFrameLine("   Qty: " + item.quantity() + " x " + formatCurrency(item.unitPrice())
+                    + "  |  Line total: " + formatCurrency(item.subtotal()));
+            if (!item.note().isBlank()) printWrappedFrameLines("   Request: " + item.note());
         }
-        System.out.println("------------------------------------------------------------");
+        printFrameSeparator();
         showBill(bill);
         printFrameBorder();
     }
 
     public void showBill(Bill bill) {
-        System.out.printf("%-40s %10s%n", "Items subtotal", formatCurrency(bill.subtotal()));
-        System.out.printf("%-40s %10s%n", bill.taxIncludedInPrices() ? "Tax included in prices" : "Tax",
-                formatCurrency(bill.tax()));
-        System.out.printf("%-40s %10s%n", "Service charge", formatCurrency(bill.serviceCharge()));
-        System.out.printf("%-40s %10s%n", "TOTAL DUE", formatCurrency(bill.total()));
+        printBillRow("Items subtotal", bill.subtotal());
+        printBillRow(bill.taxIncludedInPrices() ? "Tax included in prices" : "Tax", bill.tax());
+        printBillRow("Service charge", bill.serviceCharge());
+        printBillRow("TOTAL DUE", bill.total());
+    }
+
+    private void printBillRow(String label, java.math.BigDecimal amount) {
+        int innerWidth = CONSOLE_WIDTH - 4;
+        String value = formatCurrency(amount);
+        String row = String.format("%-" + (innerWidth - value.length()) + "s%s", label, value);
+        printLeftFrameLine(row);
+    }
+
+    private void printFrameSeparator() {
+        System.out.println(ConsoleTheme.rose("|" + "-".repeat(CONSOLE_WIDTH - 2) + "|"));
+    }
+
+    private void printWrappedFrameLines(String text) {
+        int width = CONSOLE_WIDTH - 4;
+        String remaining = text;
+        while (remaining.length() > width) {
+            int breakAt = remaining.lastIndexOf(' ', width);
+            if (breakAt <= 0) breakAt = width;
+            printLeftFrameLine(remaining.substring(0, breakAt));
+            remaining = "  " + remaining.substring(breakAt).trim();
+        }
+        printLeftFrameLine(remaining);
     }
 
     public void showTotal(java.math.BigDecimal total) {
