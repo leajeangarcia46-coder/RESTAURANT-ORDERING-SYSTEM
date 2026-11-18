@@ -23,14 +23,22 @@ public class ConsoleOutput {
         System.out.println("============================================================");
         printFrameBorder();
         printFrameLine("Welcome! Start a new dine-in or takeout order.");
-    }
-
-    public void closeOrderSetup() {
         printFrameBorder();
     }
 
-    public void printFrameMessage(String message) {
-        printFrameLine(message);
+    public void showOrderSetup(Order order) {
+        printFrameBorder();
+        printFrameLine("ORDER DETAILS");
+        printFrameBorder();
+        printFrameLine("Customer: " + order.customer().name());
+        printFrameLine("Order type: " + orderTypeLabel(order.type()));
+        if (order.type() == OrderType.DINE_IN) {
+            printFrameLine("Table: " + order.tableNumber());
+        }
+        if (!order.specialInstructions().isBlank()) {
+            printWrappedFrameText("Kitchen instructions: ", order.specialInstructions());
+        }
+        printFrameBorder();
     }
 
     public void showOrderActions() {
@@ -151,6 +159,19 @@ public class ConsoleOutput {
         int rightPadding = insideWidth - visibleLength - leftPadding;
         System.out.println("|" + " ".repeat(leftPadding) + visibleText
                 + " ".repeat(rightPadding) + "|");
+    }
+
+    private void printWrappedFrameText(String label, String text) {
+        int available = CONSOLE_WIDTH - 2;
+        String remaining = label + text;
+        while (remaining.length() > available) {
+            int split = available;
+            int space = remaining.lastIndexOf(' ', split);
+            if (space > label.length()) split = space;
+            printFrameLine(remaining.substring(0, split));
+            remaining = "  " + remaining.substring(split).trim();
+        }
+        printFrameLine(remaining);
     }
 
     private void printMenuBorder() {
