@@ -10,6 +10,17 @@
 <project name="Restaurant_Ordeirng_system" default="default" basedir=".">
     <description>Builds, tests, and runs the project Restaurant Ordeirng system.</description>
     <import file="nbproject/build-impl.xml"/>
+    <!-- NetBeans Run opens the interactive, color-enabled run.bat console. -->
+    <target name="run" depends="compile">
+        <exec executable="cmd.exe" spawn="true" failonerror="true">
+            <arg value="/c"/>
+            <arg value="start"/>
+            <arg value="FoodEase Restaurant"/>
+            <arg value="cmd.exe"/>
+            <arg value="/k"/>
+            <arg value="call &quot;${basedir}\run.bat&quot;"/>
+        </exec>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 
