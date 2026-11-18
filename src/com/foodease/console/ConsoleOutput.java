@@ -32,22 +32,8 @@ public class ConsoleOutput {
     }
 
     public void showWelcome() {
-        int frames = System.console() == null ? 1 : 5;
-        if (frames > 1) CenteredConsole.beginWelcome(8);
-        for (int frame = 1; frame <= frames; frame++) {
-            if (frame > 1) CenteredConsole.repositionWelcome(8);
-            ConsoleTheme.setFade((double) frame / frames);
-            drawWelcome();
-            if (frame < frames) {
-                try {
-                    Thread.sleep(24);
-                } catch (InterruptedException exception) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }
-        ConsoleTheme.setFade(1.0);
+        CenteredConsole.beginWelcome(8);
+        drawWelcome();
         CenteredConsole.finishWelcome();
     }
 
