@@ -12,12 +12,21 @@ import java.util.concurrent.TimeUnit;
 public final class CenteredConsole {
     private static volatile Size size = new Size(100, 40);
     private static volatile long lastSizeCheck;
+    private static PrintStream terminalOutput;
+    private static boolean alternateScreen;
 
     private CenteredConsole() { }
 
     public static void activate() {
         if (System.console() == null || Boolean.getBoolean("foodease.centeredConsole")) return;
         PrintStream original = System.out;
+        terminalOutput = original;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (alternateScreen && terminalOutput != null) {
+                terminalOutput.print("\u001B[?25h\u001B[?1049l");
+                terminalOutput.flush();
+            }
+        }, "foodease-terminal-restore"));
         size = readTerminalSize();
         lastSizeCheck = System.nanoTime();
         OutputStream centered = new OutputStream() {
@@ -54,15 +63,60 @@ public final class CenteredConsole {
 
     /** Clears the first view and positions the welcome group in the vertical center. */
     public static void beginWelcome(int welcomeLines) {
+        if (System.console() != null) {
+            alternateScreen = true;
+            terminalOutput.print("\u001B[?1049h\u001B[?25l");
+            terminalOutput.flush();
+        }
+        beginScreen(welcomeLines, false);
+    }
+
+    /** Clears the previous view and places the next content block in the terminal center. */
+    public static void beginScreen(int contentLines) {
+        beginScreen(contentLines, true);
+    }
+
+    private static void beginScreen(int contentLines, boolean animate) {
+        if (System.console() == null) return;
+        Size current = refreshSize();
+        int top = Math.max(1, (current.rows() - contentLines) / 2 + 1);
+        terminalOutput.print("\u001B[?25l\u001B[2J\u001B[3J\u001B[H");
+        terminalOutput.flush();
+        if (animate) revealTransition(current.columns());
+        terminalOutput.print("\u001B[" + top + ";1H\u001B[?25h");
+        terminalOutput.flush();
+    }
+
+    private static void revealTransition(int columns) {
+        int width = Math.min(ConsoleOutput.CONSOLE_WIDTH, Math.max(12, columns - 4));
+        for (int step = 1; step <= 4; step++) {
+            int visible = Math.max(1, width * step / 4);
+            int left = Math.max(1, (columns - visible) / 2 + 1);
+            terminalOutput.print("\u001B[1;" + left + "H" + ConsoleTheme.rose("=".repeat(visible)));
+            terminalOutput.flush();
+            try {
+                Thread.sleep(18);
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    /** Repositions the welcome reveal without clearing, avoiding a flicker between frames. */
+    public static void repositionWelcome(int welcomeLines) {
         if (System.console() == null) return;
         Size current = refreshSize();
         int top = Math.max(1, (current.rows() - welcomeLines) / 2 + 1);
-        System.out.print("\u001B[2J\u001B[?25l\u001B[" + top + ";1H");
-        System.out.flush();
+        terminalOutput.print("\u001B[" + top + ";1H");
+        terminalOutput.flush();
     }
 
     public static void finishWelcome() {
-        if (System.console() != null) System.out.print("\u001B[?25h");
+        if (System.console() != null) {
+            terminalOutput.print("\u001B[?25h");
+            terminalOutput.flush();
+        }
     }
 
     /** Prints the customer label flush with the inside-left edge of the centered welcome box. */
@@ -91,12 +145,12 @@ public final class CenteredConsole {
         int columns = 100;
         int rows = 40;
         try {
-            Process process = new ProcessBuilder("powershell.exe", "-NoProfile", "-NonInteractive",
-                    "-Command", "[Console]::Error.WriteLine([Console]::WindowWidth.ToString() + ',' + [Console]::WindowHeight.ToString())")
-                    .redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
+        Process process = new ProcessBuilder("powershell.exe", "-NoProfile", "-NonInteractive",
+                    "-Command", "$window = $Host.UI.RawUI.WindowSize; [Console]::Out.WriteLine($window.Width.ToString() + ',' + $window.Height.ToString())")
+                    .redirectErrorStream(true).start();
             if (process.waitFor(1200, TimeUnit.MILLISECONDS)) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        process.getErrorStream(), StandardCharsets.UTF_8))) {
+                        process.getInputStream(), StandardCharsets.UTF_8))) {
                     String output = reader.readLine();
                     if (output != null && output.matches("\\d+,\\d+")) {
                         String[] dimensions = output.split(",");
