@@ -56,18 +56,20 @@ public class ConsoleApp {
 
     private void addItem(Order order) {
         output.showMenu(orderService.getMenu());
-        output.print("Add multiple items below. Enter B when you are finished.");
+        output.showAddItemsInstructions();
         while (true) {
             String choice = input.readLine("Menu item number to add (or B when finished): ");
-            if (choice.equalsIgnoreCase("B")) return;
+            if (choice.equalsIgnoreCase("B")) {
+                output.showAddItemsFinished();
+                return;
+            }
             try {
                 MenuItem item = orderService.getMenuItem(choice);
                 int quantity = input.readPositiveInt("Quantity: ");
                 order.addItem(item, quantity);
-                output.print("Added " + quantity + " x " + item.name() + " to the order.");
-                output.showTotal(order.total());
+                output.showAddedItem(item, quantity, new OrderItem(item, quantity).subtotal(), order.total());
             } catch (IllegalArgumentException ex) {
-                output.print(ex.getMessage());
+                output.showAddItemMessage(ex.getMessage());
             }
         }
     }
