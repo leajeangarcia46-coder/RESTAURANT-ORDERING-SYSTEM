@@ -68,47 +68,15 @@ public final class CenteredConsole {
             terminalOutput.print("\u001B[?1049h\u001B[?25l");
             terminalOutput.flush();
         }
-        beginScreen(welcomeLines, false);
+        beginScreen(welcomeLines);
     }
 
     /** Clears the previous view and places the next content block in the terminal center. */
     public static void beginScreen(int contentLines) {
-        beginScreen(contentLines, true);
-    }
-
-    private static void beginScreen(int contentLines, boolean animate) {
         if (System.console() == null) return;
         Size current = refreshSize();
         int top = Math.max(1, (current.rows() - contentLines) / 2 + 1);
-        terminalOutput.print("\u001B[?25l\u001B[2J\u001B[3J\u001B[H");
-        terminalOutput.flush();
-        if (animate) revealTransition(current.columns());
-        terminalOutput.print("\u001B[" + top + ";1H\u001B[?25h");
-        terminalOutput.flush();
-    }
-
-    private static void revealTransition(int columns) {
-        int width = Math.min(ConsoleOutput.CONSOLE_WIDTH, Math.max(12, columns - 4));
-        for (int step = 1; step <= 4; step++) {
-            int visible = Math.max(1, width * step / 4);
-            int left = Math.max(1, (columns - visible) / 2 + 1);
-            terminalOutput.print("\u001B[1;" + left + "H" + ConsoleTheme.rose("=".repeat(visible)));
-            terminalOutput.flush();
-            try {
-                Thread.sleep(18);
-            } catch (InterruptedException exception) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-    }
-
-    /** Repositions the welcome reveal without clearing, avoiding a flicker between frames. */
-    public static void repositionWelcome(int welcomeLines) {
-        if (System.console() == null) return;
-        Size current = refreshSize();
-        int top = Math.max(1, (current.rows() - welcomeLines) / 2 + 1);
-        terminalOutput.print("\u001B[" + top + ";1H");
+        terminalOutput.print("\u001B[2J\u001B[3J\u001B[H\u001B[" + top + ";1H");
         terminalOutput.flush();
     }
 
