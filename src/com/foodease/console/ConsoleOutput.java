@@ -48,6 +48,46 @@ public class ConsoleOutput {
         printFrameBorder();
     }
 
+    public void showAddItemsInstructions() {
+        printFrameBorder();
+        printFrameLine("ADD ITEMS TO YOUR ORDER");
+        printFrameBorder();
+        printLeftFrameLine("Add as many items as needed. Enter B when finished.");
+        printFrameBorder();
+    }
+
+    public void showAddedItem(MenuItem item, int quantity, java.math.BigDecimal lineTotal,
+                              java.math.BigDecimal orderTotal) {
+        System.out.println();
+        printFrameBorder();
+        printFrameLine("ITEM ADDED");
+        printFrameBorder();
+        printLeftFrameLine("Added " + quantity + " x " + item.name() + " to the order.");
+        printLeftFrameLine("Item total: " + formatCurrency(lineTotal));
+        printLeftFrameLine("Current total: " + formatCurrency(orderTotal));
+        printFrameBorder();
+    }
+
+    public void showAddItemsFinished() {
+        System.out.println();
+        printFrameBorder();
+        printFrameLine("Finished adding items");
+        printFrameBorder();
+    }
+
+    public void showAddItemMessage(String text) {
+        System.out.println();
+        printFrameBorder();
+        printFrameLine(text);
+        printFrameBorder();
+    }
+
+    private void printLeftFrameLine(String text) {
+        int innerWidth = CONSOLE_WIDTH - 4;
+        String visibleText = text.length() > innerWidth ? text.substring(0, innerWidth) : text;
+        System.out.printf("| %-" + innerWidth + "s |%n", visibleText);
+    }
+
     public void showMenu(Iterable<MenuItem> items) {
         printMenuBorder();
         printMenuTitle("RESTAURANT MENU");
