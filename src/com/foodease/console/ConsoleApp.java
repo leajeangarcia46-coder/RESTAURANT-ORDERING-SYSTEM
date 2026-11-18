@@ -39,20 +39,21 @@ public class ConsoleApp {
 
         while (true) {
             output.showOrderActions();
-            String action = input.readLine("Select an option (1-5): ");
+            String action = input.readLine("Select an option (1-6): ");
             switch (action.toUpperCase()) {
                 case "1" -> addItem(order);
-                case "2" -> output.showCart(order);
+                case "2" -> output.showCart(order, orderService.calculateBill(order));
                 case "3" -> removeItem(order);
-                case "4" -> {
+                case "4" -> changeQuantity(order);
+                case "5" -> {
                     if (order.items().isEmpty()) output.print("Add at least one item before checkout.");
                     else if (checkout(order)) return;
                 }
-                case "5" -> {
+                case "6" -> {
                     output.print("Order cancelled.");
                     return;
                 }
-                default -> output.print("Enter a number from 1 to 5.");
+                default -> output.print("Enter a number from 1 to 6.");
             }
         }
     }
@@ -69,8 +70,10 @@ public class ConsoleApp {
             try {
                 MenuItem item = orderService.getMenuItem(choice);
                 int quantity = input.readPositiveInt("Quantity: ");
-                order.addItem(item, quantity);
-                output.showAddedItem(item, quantity, new OrderItem(item, quantity).subtotal(), order.total());
+                String note = input.readLine("Special request (optional, press Enter to skip): ");
+                order.addItem(item, quantity, note);
+                output.showAddedItem(item, quantity, new OrderItem(item, quantity, note).subtotal(),
+                        orderService.calculateBill(order));
             } catch (IllegalArgumentException ex) {
                 output.showAddItemMessage(ex.getMessage());
             }
@@ -78,7 +81,7 @@ public class ConsoleApp {
     }
 
     private void removeItem(Order order) {
-        output.showCart(order);
+        output.showCart(order, orderService.calculateBill(order));
         if (order.items().isEmpty()) return;
         int itemNumber = input.readInt("Order line to remove (0 to go back): ");
         if (itemNumber == 0) return;
@@ -89,7 +92,22 @@ public class ConsoleApp {
         try {
             order.removeItem(itemNumber);
             output.print("Item removed.");
-            output.showCart(order);
+            output.showCart(order, orderService.calculateBill(order));
+        } catch (IllegalArgumentException ex) {
+            output.print(ex.getMessage());
+        }
+    }
+
+    private void changeQuantity(Order order) {
+        output.showCart(order, orderService.calculateBill(order));
+        if (order.items().isEmpty()) return;
+        int itemNumber = input.readInt("Cart line number to change (0 to go back): ");
+        if (itemNumber == 0) return;
+        try {
+            int quantity = input.readPositiveInt("New quantity: ");
+            order.setQuantity(itemNumber, quantity);
+            output.print("Quantity updated.");
+            output.showCart(order, orderService.calculateBill(order));
         } catch (IllegalArgumentException ex) {
             output.print(ex.getMessage());
         }
@@ -97,19 +115,21 @@ public class ConsoleApp {
 
     private boolean checkout(Order order) {
         while (true) {
-            String method = input.readLine("Payment method (cash/card, or B to go back): ");
+            String method = input.readLine("Payment (cash/card/wallet, or B to go back): ");
             if (method.equalsIgnoreCase("B")) return false;
-            if (!method.equalsIgnoreCase("cash") && !method.equalsIgnoreCase("card")) {
-                output.print("Choose cash or card.");
+            if (!method.equalsIgnoreCase("cash") && !method.equalsIgnoreCase("card")
+                    && !method.equalsIgnoreCase("wallet")) {
+                output.print("Choose cash, card, or wallet.");
                 continue;
             }
-            java.math.BigDecimal tendered = order.total();
+            java.math.BigDecimal totalDue = orderService.calculateBill(order).total();
+            java.math.BigDecimal tendered = totalDue;
             if (method.equalsIgnoreCase("cash")) {
                 while (true) {
                     String amount = input.readLine("Cash received: ");
                     try {
                         tendered = new java.math.BigDecimal(amount);
-                        if (tendered.compareTo(order.total()) >= 0) break;
+                        if (tendered.compareTo(totalDue) >= 0) break;
                         output.print("Cash received must cover the total.");
                     } catch (NumberFormatException ex) {
                         output.print("Enter a valid amount, for example 100.00.");
