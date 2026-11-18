@@ -47,9 +47,13 @@ public class ReceiptPrinter {
         lines.add("----------------------------------------");
         for (OrderItem item : order.items()) {
             lines.add(item.quantity() + " x " + item.menuItem().name());
-            lines.add("    " + money(item.subtotal()));
+            lines.add("    " + money(item.unitPrice()) + " each = " + money(item.subtotal()));
+            if (!item.note().isBlank()) lines.add("    Special request: " + item.note());
         }
         lines.add("----------------------------------------");
+        lines.add("Subtotal: " + money(receipt.subtotal()));
+        lines.add((receipt.taxIncludedInPrices() ? "Tax included: " : "Tax: ") + money(receipt.tax()));
+        lines.add("Service charge: " + money(receipt.serviceCharge()));
         lines.add("TOTAL: " + money(receipt.total()));
         lines.add("Payment: " + receipt.payment().method().toUpperCase(Locale.ROOT));
         if (receipt.payment().method().equals("cash")) {
