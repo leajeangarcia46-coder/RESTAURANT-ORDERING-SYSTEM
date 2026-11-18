@@ -18,22 +18,22 @@ public class ConsoleApp {
         output.showWelcome();
         String name;
         do {
-            name = input.readFramedLine("Customer name: ");
-            if (name.isBlank()) output.printFrameMessage("Please enter a customer name to start the order.");
+            name = input.readLine("Customer name: ");
+            if (name.isBlank()) output.print("Please enter a customer name to start the order.");
         } while (name.isBlank());
 
         int typeChoice;
         while (true) {
-            typeChoice = input.readFramedInt("Order type (1 dine-in, 2 takeout): ");
+            typeChoice = input.readInt("Order type (1 dine-in, 2 takeout): ");
             if (typeChoice == 1 || typeChoice == 2) break;
-            output.printFrameMessage("Choose 1 for dine-in or 2 for takeout.");
+            output.print("Choose 1 for dine-in or 2 for takeout.");
         }
         OrderType type = typeChoice == 1 ? OrderType.DINE_IN : OrderType.TAKEOUT;
         String tableNumber = type == OrderType.DINE_IN
-                ? Integer.toString(input.readFramedPositiveInt("Table number: ")) : "";
+                ? Integer.toString(input.readPositiveInt("Table number: ")) : "";
         Order order = orderService.createOrder(name, type, tableNumber);
-        order.setSpecialInstructions(input.readFramedLine("Kitchen instructions (optional): "));
-        output.closeOrderSetup();
+        order.setSpecialInstructions(input.readLine("Kitchen instructions (optional): "));
+        output.showOrderSetup(order);
 
         while (true) {
             output.showOrderActions();
@@ -56,8 +56,9 @@ public class ConsoleApp {
     }
 
     private void addItem(Order order) {
+        output.showMenu(orderService.getMenu());
+        output.print("Add multiple items below. Enter B when you are finished.");
         while (true) {
-            output.showMenu(orderService.getMenu());
             String choice = input.readLine("Menu item number to add (or B when finished): ");
             if (choice.equalsIgnoreCase("B")) return;
             try {
