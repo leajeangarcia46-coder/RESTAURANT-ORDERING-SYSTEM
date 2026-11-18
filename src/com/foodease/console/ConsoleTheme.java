@@ -3,17 +3,22 @@ package com.foodease.console;
 /** ANSI colors for terminals that support 24-bit color output. */
 final class ConsoleTheme {
     private static final String RESET = "\u001B[0m";
-    private static final String ROSE = "\u001B[38;2;206;152;172m"; // #CE98AC
-    private static final String SAGE = "\u001B[38;2;171;194;157m"; // #ABC29D
+    private static volatile double fade = 1.0;
     private static final boolean ENABLED = System.console() != null
             && System.getenv("NO_COLOR") == null;
 
     private ConsoleTheme() { }
 
-    static String rose(String text) { return colorize(ROSE, text); }
-    static String sage(String text) { return colorize(SAGE, text); }
+    static void setFade(double progress) { fade = Math.max(0.0, Math.min(1.0, progress)); }
 
-    private static String colorize(String color, String text) {
-        return ENABLED ? color + text + RESET : text;
+    static String rose(String text) { return colorize(206, 152, 172, text); }
+    static String sage(String text) { return colorize(171, 194, 157, text); }
+
+    private static String colorize(int red, int green, int blue, String text) {
+        if (!ENABLED) return text;
+        int r = (int) Math.round(red * fade);
+        int g = (int) Math.round(green * fade);
+        int b = (int) Math.round(blue * fade);
+        return "\u001B[38;2;" + r + ";" + g + ";" + b + "m" + text + RESET;
     }
 }
