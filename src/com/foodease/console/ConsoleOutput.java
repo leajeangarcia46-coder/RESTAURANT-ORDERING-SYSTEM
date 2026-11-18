@@ -20,8 +20,9 @@ public class ConsoleOutput {
 
     public void showWelcome() {
         int frames = System.console() == null ? 1 : 5;
+        if (frames > 1) CenteredConsole.beginWelcome(8);
         for (int frame = 1; frame <= frames; frame++) {
-            if (frames > 1) CenteredConsole.beginWelcome(8);
+            if (frame > 1) CenteredConsole.repositionWelcome(8);
             ConsoleTheme.setFade((double) frame / frames);
             drawWelcome();
             if (frame < frames) {
@@ -48,6 +49,7 @@ public class ConsoleOutput {
     }
 
     public void showOrderSetup(Order order) {
+        CenteredConsole.beginScreen(order.type() == OrderType.DINE_IN ? 13 : 12);
         printFrameBorder();
         printFrameLine("ORDER DETAILS");
         printFrameBorder();
@@ -112,6 +114,11 @@ public class ConsoleOutput {
     public void showMenu(Iterable<MenuItem> items) {
         List<MenuItem> menu = new ArrayList<>();
         items.forEach(menu::add);
+        int categoryCount = 0;
+        for (MenuCategory category : MenuCategory.values()) {
+            if (menu.stream().anyMatch(item -> item.category() == category)) categoryCount++;
+        }
+        CenteredConsole.beginScreen(11 + menu.size() + (2 * categoryCount));
         printMenuBorder();
         printMenuTitle("RESTAURANT MENU");
         printMenuBorder();
@@ -131,6 +138,11 @@ public class ConsoleOutput {
     }
 
     public void showReceipt(Receipt receipt, Order order) {
+        int receiptLines = 19 + order.items().size();
+        if (receipt.orderType() == OrderType.DINE_IN) receiptLines++;
+        receiptLines += (int) order.items().stream().filter(item -> !item.note().isBlank()).count();
+        if (receipt.payment().method().equals("cash")) receiptLines += 2;
+        CenteredConsole.beginScreen(receiptLines);
         System.out.println("\n============================================================");
         System.out.println("                  FOODEASE RESTAURANT");
         System.out.println("                       RECEIPT");
@@ -163,6 +175,10 @@ public class ConsoleOutput {
     }
 
     public void showCart(Order order, Bill bill) {
+        int cartLines = order.items().isEmpty() ? 8 : 13 + order.items().size();
+        if (order.type() == OrderType.DINE_IN) cartLines++;
+        cartLines += (int) order.items().stream().filter(item -> !item.note().isBlank()).count();
+        CenteredConsole.beginScreen(cartLines);
         System.out.println();
         printFrameBorder();
         printFrameLine("CURRENT ORDER");
