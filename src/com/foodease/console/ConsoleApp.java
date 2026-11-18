@@ -21,7 +21,7 @@ public class ConsoleApp {
         output.showWelcome();
         String name;
         do {
-            name = input.readLine("Customer name: ");
+            name = input.readCustomerName();
             if (name.isBlank()) output.print("Please enter a customer name to start the order.");
         } while (name.isBlank());
 
