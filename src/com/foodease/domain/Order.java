@@ -25,16 +25,21 @@ public class Order {
     }
 
     public void addItem(MenuItem item, int quantity) {
+        addItem(item, quantity, "");
+    }
+
+    public void addItem(MenuItem item, int quantity, String note) {
         Objects.requireNonNull(item);
         if (quantity < 1) throw new IllegalArgumentException("Quantity must be at least 1");
+        String normalizedNote = note == null ? "" : note.trim();
         for (int index = 0; index < items.size(); index++) {
             OrderItem current = items.get(index);
-            if (current.menuItem().id().equals(item.id())) {
-                items.set(index, new OrderItem(item, current.quantity() + quantity));
+            if (current.menuItem().id().equals(item.id()) && current.note().equalsIgnoreCase(normalizedNote)) {
+                items.set(index, new OrderItem(item, current.quantity() + quantity, normalizedNote));
                 return;
             }
         }
-        items.add(new OrderItem(item, quantity));
+        items.add(new OrderItem(item, quantity, normalizedNote));
     }
 
     public void removeItem(int itemNumber) {
@@ -42,6 +47,17 @@ public class Order {
             throw new IllegalArgumentException("Cart item number is out of range");
         }
         items.remove(itemNumber - 1);
+    }
+
+    public void setQuantity(int itemNumber, int quantity) {
+        if (itemNumber < 1 || itemNumber > items.size()) {
+            throw new IllegalArgumentException("Cart item number is out of range");
+        }
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
+        OrderItem current = items.get(itemNumber - 1);
+        items.set(itemNumber - 1, new OrderItem(current.menuItem(), quantity, current.note()));
     }
 
     public Customer customer() { return customer; }
