@@ -18,6 +18,6 @@ java -cp build/classes com.foodease.Main
 
 ## Order flow
 
-Enter a customer name and choose dine-in or takeout. Dine-in orders request a table number. Use **1** to enter add mode; the menu appears once and you can add multiple items before entering **B**. Use **2** to review the order, **3** to remove an item, **4** to check out, or **5** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt.
+Enter a customer name and choose dine-in or takeout. Dine-in orders request a table number. Use **1** to enter add mode; the menu appears once and you can add multiple items before entering **B**. Use **2** to review the order, **3** to remove an item, **4** to check out, or **5** to cancel. Checkout accepts cash or card; cash orders ask for the amount received and print the change on the receipt. After checkout, choose **Y** at the paper receipt prompt to select a printer.
 
 Menu data is held in memory in `InMemoryMenuRepository` and resets when the application exits. Card payments are recorded in the console and are not processed by a payment provider.
