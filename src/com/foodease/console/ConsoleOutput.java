@@ -18,6 +18,19 @@ public class ConsoleOutput {
         currency.setMaximumFractionDigits(2);
     }
 
+    /** Shows a labeled prompt in the same framed style as menu and status panels. */
+    public static void showInputPrompt(String prompt) {
+        int innerWidth = CONSOLE_WIDTH - 4;
+        String label = prompt.trim();
+        if (label.length() > innerWidth) label = label.substring(0, innerWidth - 3) + "...";
+        System.out.println(ConsoleTheme.rose("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+"));
+        System.out.println(ConsoleTheme.rose("| ") + ConsoleTheme.sage(String.format("%-" + innerWidth + "s", label))
+                + ConsoleTheme.rose(" |"));
+        System.out.println(ConsoleTheme.rose("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+"));
+        System.out.print(ConsoleTheme.sage("> "));
+        System.out.flush();
+    }
+
     public void showWelcome() {
         int frames = System.console() == null ? 1 : 5;
         if (frames > 1) CenteredConsole.beginWelcome(8);
@@ -278,5 +291,10 @@ public class ConsoleOutput {
         return "PHP " + currency.format(amount);
     }
 
-    public void print(String message) { System.out.println(message); }
+    public void print(String message) {
+        System.out.println();
+        printFrameBorder();
+        printLeftFrameLine(message);
+        printFrameBorder();
+    }
 }
