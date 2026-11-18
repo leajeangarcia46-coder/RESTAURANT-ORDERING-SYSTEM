@@ -50,10 +50,7 @@ public final class CenteredConsole {
 
             @Override
             public synchronized void flush() {
-                if (line.size() > 0) {
-                    writeLine(original, line.toByteArray());
-                    line.reset();
-                }
+                // printf may flush between fields; keep collecting until the line ending.
                 original.flush();
             }
         };
@@ -61,7 +58,7 @@ public final class CenteredConsole {
         System.setProperty("foodease.centeredConsole", "true");
     }
 
-    /** Clears the first view and positions the welcome group in the vertical center. */
+    /** Opens a clean terminal screen and centers the welcome group vertically. */
     public static void beginWelcome(int welcomeLines) {
         if (System.console() != null) {
             alternateScreen = true;
@@ -71,12 +68,12 @@ public final class CenteredConsole {
         beginScreen(welcomeLines);
     }
 
-    /** Clears the previous view and places the next content block in the terminal center. */
+    /** Clears the current page and vertically centers the next screen without a delay. */
     public static void beginScreen(int contentLines) {
         if (System.console() == null) return;
         Size current = refreshSize();
         int top = Math.max(1, (current.rows() - contentLines) / 2 + 1);
-        terminalOutput.print("\u001B[2J\u001B[3J\u001B[H\u001B[" + top + ";1H");
+        terminalOutput.print("\u001B[?25l\u001B[2J\u001B[3J\u001B[H\u001B[" + top + ";1H\u001B[?25h");
         terminalOutput.flush();
     }
 
@@ -87,17 +84,16 @@ public final class CenteredConsole {
         }
     }
 
-    /** Prints the customer label flush with the inside-left edge of the centered welcome box. */
-    public static void printCustomerPrompt(String prompt) {
+    /** Prints the input marker without forcing the line-centering buffer to split a prompt. */
+    public static void printPromptMarker() {
         if (System.console() == null) {
-            System.out.print(ConsoleTheme.sage(prompt));
+            System.out.print(ConsoleTheme.sage("> "));
             System.out.flush();
             return;
         }
-        Size current = refreshSize();
-        int boxStart = Math.max(0, (current.columns() - ConsoleOutput.CONSOLE_WIDTH) / 2);
-        System.out.print("\u001B[" + (boxStart + 2) + "G" + ConsoleTheme.sage(prompt));
-        System.out.flush();
+        int left = Math.max(0, (size.columns() - ConsoleOutput.CONSOLE_WIDTH) / 2);
+        terminalOutput.print("\u001B[" + (left + 2) + "G" + ConsoleTheme.sage("> "));
+        terminalOutput.flush();
     }
 
     private static synchronized Size refreshSize() {
@@ -136,7 +132,8 @@ public final class CenteredConsole {
     }
 
     private static void writeLine(PrintStream original, byte[] bytes) {
-        Size current = refreshSize();
+        // Keep line output immediate; refresh dimensions only when a new screen starts.
+        Size current = size;
         String text = new String(bytes, StandardCharsets.UTF_8);
         String visible = text.replaceAll("\\u001B\\[[0-?]*[ -/]*[@-~]", "").replace("\r", "");
         int padding = Math.max(0, (current.columns() - visible.length()) / 2);
