@@ -19,10 +19,10 @@ public class ConsoleOutput {
     }
 
     public void showWelcome() {
-        System.out.println("============================================================");
+        System.out.println(ConsoleTheme.rose("============================================================"));
         printCentered("FOODEASE RESTAURANT");
         printCentered("ORDERING & CHECKOUT");
-        System.out.println("============================================================");
+        System.out.println(ConsoleTheme.rose("============================================================"));
         printFrameBorder();
         printFrameLine("Welcome! Start a new dine-in or takeout order.");
         printFrameBorder();
@@ -202,11 +202,11 @@ public class ConsoleOutput {
 
     private void printCentered(String text) {
         int leftPadding = Math.max(0, (CONSOLE_WIDTH - text.length()) / 2);
-        System.out.println(" ".repeat(leftPadding) + text);
+        System.out.println(ConsoleTheme.sage(" ".repeat(leftPadding) + text));
     }
 
     private void printFrameBorder() {
-        System.out.println("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+");
+        System.out.println(ConsoleTheme.rose("+" + "-".repeat(CONSOLE_WIDTH - 2) + "+"));
     }
 
     private void printFrameLine(String text) {
@@ -215,28 +215,28 @@ public class ConsoleOutput {
         String visibleText = text.substring(0, visibleLength);
         int leftPadding = (insideWidth - visibleLength) / 2;
         int rightPadding = insideWidth - visibleLength - leftPadding;
-        System.out.println("|" + " ".repeat(leftPadding) + visibleText
-                + " ".repeat(rightPadding) + "|");
+        System.out.println(ConsoleTheme.rose("|" + " ".repeat(leftPadding) + visibleText
+                + " ".repeat(rightPadding) + "|"));
     }
 
     private void printMenuBorder() {
-        System.out.println("+-----+" + "-".repeat(MENU_NAME_WIDTH + 2)
+        System.out.println(ConsoleTheme.rose("+-----+" + "-".repeat(MENU_NAME_WIDTH + 2)
                 + "+" + "-".repeat(CATEGORY_WIDTH + 2)
-                + "+" + "-".repeat(PRICE_WIDTH + 2) + "+");
+                + "+" + "-".repeat(PRICE_WIDTH + 2) + "+"));
     }
 
     private void printMenuTitle(String title) {
         int insideWidth = 5 + (MENU_NAME_WIDTH + 2) + (CATEGORY_WIDTH + 2) + (PRICE_WIDTH + 2) + 3;
         int leftPadding = (insideWidth - title.length()) / 2;
         int rightPadding = insideWidth - title.length() - leftPadding;
-        System.out.println("|" + " ".repeat(leftPadding) + title + " ".repeat(rightPadding) + "|");
+        System.out.println(ConsoleTheme.rose("|" + " ".repeat(leftPadding) + title + " ".repeat(rightPadding) + "|"));
     }
 
     private void printMenuCategory(String category) {
         int insideWidth = 5 + (MENU_NAME_WIDTH + 2) + (CATEGORY_WIDTH + 2) + (PRICE_WIDTH + 2) + 3;
         int contentWidth = insideWidth - 2;
         String label = " " + category;
-        System.out.println("|" + label + " ".repeat(Math.max(0, contentWidth - label.length())) + "|");
+        System.out.println(ConsoleTheme.sage("|" + label + " ".repeat(Math.max(0, contentWidth - label.length())) + "|"));
     }
 
     private String formatCurrency(java.math.BigDecimal amount) {
