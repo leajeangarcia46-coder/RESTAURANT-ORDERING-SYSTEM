@@ -4,8 +4,15 @@ import java.util.Scanner;
 
 public class ConsoleInput {
     private final Scanner scanner = new Scanner(System.in);
+
+    public String readCustomerName() {
+        CenteredConsole.printCustomerPrompt("Customer name: ");
+        return scanner.nextLine().trim();
+    }
+
     public String readLine(String prompt) {
         System.out.print(ConsoleTheme.sage(prompt));
+        System.out.flush();
         return scanner.nextLine().trim();
     }
 
