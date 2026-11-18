@@ -172,7 +172,7 @@ public class ConsoleOutput {
     }
 
     public void showCart(Order order, Bill bill) {
-        int cartLines = order.items().isEmpty() ? 8 : 13 + order.items().size();
+        int cartLines = order.items().isEmpty() ? 15 : 13 + (2 * order.items().size());
         if (order.type() == OrderType.DINE_IN) cartLines++;
         cartLines += (int) order.items().stream().filter(item -> !item.note().isBlank()).count();
         CenteredConsole.beginScreen(cartLines);
