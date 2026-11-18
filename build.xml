@@ -12,7 +12,7 @@
     <import file="nbproject/build-impl.xml"/>
     <!-- NetBeans Run opens the interactive, color-enabled run.bat console. -->
     <target name="run" depends="compile">
-        <exec executable="cmd.exe" spawn="true" failonerror="true">
+        <exec executable="cmd.exe" spawn="true">
             <arg value="/c"/>
             <arg value="start"/>
             <arg value="FoodEase Restaurant"/>
