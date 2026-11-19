@@ -2,9 +2,6 @@
 setlocal
 title FoodEase Restaurant Ordering System
 cd /d "%~dp0"
-mode con: cols=100 lines=40 >nul 2>&1
-set "COLUMNS=100"
-
 if not exist "build\classes" mkdir "build\classes"
 
 javac -encoding UTF-8 -sourcepath "src" -d "build\classes" "src\com\foodease\Main.java"
