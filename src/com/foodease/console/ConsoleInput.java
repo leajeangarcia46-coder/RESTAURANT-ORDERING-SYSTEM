@@ -1,23 +1,32 @@
 package com.foodease.console;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class ConsoleInput {
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
+
+    public ConsoleInput() {
+        this(new Scanner(System.in));
+    }
+
+    public ConsoleInput(Scanner scanner) {
+        this.scanner = Objects.requireNonNull(scanner);
+    }
 
     public String readCustomerName() {
         return readLine("Customer name: ");
     }
 
     public String readLine(String prompt) {
-        ConsoleOutput.showInputPrompt(prompt);
+        ConsoleLayout.inputPrompt(prompt);
         return scanner.nextLine().trim();
     }
 
     public int readInt(String prompt) {
         while (true) {
             try { return Integer.parseInt(readLine(prompt)); }
-            catch (NumberFormatException ex) { System.out.println("Enter a whole number."); }
+            catch (NumberFormatException ex) { ConsoleLayout.message("Enter a whole number."); }
         }
     }
 
@@ -25,7 +34,7 @@ public class ConsoleInput {
         while (true) {
             int value = readInt(prompt);
             if (value > 0) return value;
-            System.out.println("Enter a number greater than zero.");
+            ConsoleLayout.message("Enter a number greater than zero.");
         }
     }
 
