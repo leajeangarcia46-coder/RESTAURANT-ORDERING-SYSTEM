@@ -42,7 +42,7 @@ public class ConsoleApp {
             String action = input.readLine("Select an option (1-6): ");
             switch (action.toUpperCase()) {
                 case "1" -> addItem(order);
-                case "2" -> output.showCart(order, orderService.calculateBill(order));
+                case "2" -> output.showCart(order, orderService.calculateBill(order), 11);
                 case "3" -> removeItem(order);
                 case "4" -> changeQuantity(order);
                 case "5" -> {
@@ -81,7 +81,7 @@ public class ConsoleApp {
     }
 
     private void removeItem(Order order) {
-        output.showCart(order, orderService.calculateBill(order));
+        output.showCart(order, orderService.calculateBill(order), 4);
         if (order.items().isEmpty()) return;
         int itemNumber = input.readInt("Order line to remove (0 to go back): ");
         if (itemNumber == 0) return;
@@ -92,14 +92,14 @@ public class ConsoleApp {
         try {
             order.removeItem(itemNumber);
             output.print("Item removed.");
-            output.showCart(order, orderService.calculateBill(order));
+            output.showCart(order, orderService.calculateBill(order), 11);
         } catch (IllegalArgumentException ex) {
             output.print(ex.getMessage());
         }
     }
 
     private void changeQuantity(Order order) {
-        output.showCart(order, orderService.calculateBill(order));
+        output.showCart(order, orderService.calculateBill(order), 4);
         if (order.items().isEmpty()) return;
         int itemNumber = input.readInt("Cart line number to change (0 to go back): ");
         if (itemNumber == 0) return;
@@ -107,7 +107,7 @@ public class ConsoleApp {
             int quantity = input.readPositiveInt("New quantity: ");
             order.setQuantity(itemNumber, quantity);
             output.print("Quantity updated.");
-            output.showCart(order, orderService.calculateBill(order));
+            output.showCart(order, orderService.calculateBill(order), 11);
         } catch (IllegalArgumentException ex) {
             output.print(ex.getMessage());
         }
