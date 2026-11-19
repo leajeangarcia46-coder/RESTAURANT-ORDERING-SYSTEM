@@ -11,20 +11,11 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class ReceiptPrinter {
-    private final NumberFormat currency = NumberFormat.getNumberInstance(Locale.US);
-
-    public ReceiptPrinter() {
-        currency.setMinimumFractionDigits(2);
-        currency.setMaximumFractionDigits(2);
-    }
-
     public boolean printReceipt(Receipt receipt, Order order) throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setJobName("FoodEase Receipt " + receipt.receiptNumber());
@@ -42,23 +33,25 @@ public class ReceiptPrinter {
         lines.add("Order: " + receipt.receiptNumber());
         lines.add("Date: " + receipt.issuedAt().toString().replace('T', ' '));
         lines.add("Customer: " + receipt.customer().name());
-        lines.add("Type: " + (receipt.orderType() == OrderType.DINE_IN ? "Dine-in" : "Takeout"));
+        lines.add("Type: " + receipt.orderType().displayName());
         if (receipt.orderType() == OrderType.DINE_IN) lines.add("Table: " + order.tableNumber());
         lines.add("----------------------------------------");
         for (OrderItem item : order.items()) {
             lines.add(item.quantity() + " x " + item.menuItem().name());
-            lines.add("    " + money(item.unitPrice()) + " each = " + money(item.subtotal()));
+            lines.add("    " + ConsoleLayout.money(item.unitPrice()) + " each = "
+                    + ConsoleLayout.money(item.subtotal()));
             if (!item.note().isBlank()) lines.add("    Special request: " + item.note());
         }
         lines.add("----------------------------------------");
-        lines.add("Subtotal: " + money(receipt.subtotal()));
-        lines.add((receipt.taxIncludedInPrices() ? "Tax included: " : "Tax: ") + money(receipt.tax()));
-        lines.add("Service charge: " + money(receipt.serviceCharge()));
-        lines.add("TOTAL: " + money(receipt.total()));
+        lines.add("Subtotal: " + ConsoleLayout.money(receipt.subtotal()));
+        lines.add((receipt.taxIncludedInPrices() ? "Tax included: " : "Tax: ")
+                + ConsoleLayout.money(receipt.tax()));
+        lines.add("Service charge: " + ConsoleLayout.money(receipt.serviceCharge()));
+        lines.add("TOTAL: " + ConsoleLayout.money(receipt.total()));
         lines.add("Payment: " + receipt.payment().method().toUpperCase(Locale.ROOT));
         if (receipt.payment().method().equals("cash")) {
-            lines.add("Cash received: " + money(receipt.payment().amountTendered()));
-            lines.add("Change: " + money(receipt.payment().changeDue()));
+            lines.add("Cash received: " + ConsoleLayout.money(receipt.payment().amountTendered()));
+            lines.add("Change: " + ConsoleLayout.money(receipt.payment().changeDue()));
         }
         lines.add("");
         lines.add("Thank you for dining with us!");
@@ -87,7 +80,4 @@ public class ReceiptPrinter {
         };
     }
 
-    private String money(BigDecimal amount) {
-        return "PHP " + currency.format(amount);
-    }
 }
