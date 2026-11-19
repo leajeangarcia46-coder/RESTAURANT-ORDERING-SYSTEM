@@ -91,7 +91,7 @@ public final class CenteredConsole {
             System.out.flush();
             return;
         }
-        int left = Math.max(0, (size.columns() - ConsoleOutput.CONSOLE_WIDTH) / 2);
+        int left = Math.max(0, (size.columns() - ConsoleLayout.FRAME_WIDTH) / 2);
         terminalOutput.print("\u001B[" + (left + 2) + "G" + ConsoleTheme.sage("> "));
         terminalOutput.flush();
     }
