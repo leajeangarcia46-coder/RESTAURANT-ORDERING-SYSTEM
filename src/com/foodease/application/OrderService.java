@@ -7,6 +7,7 @@ import com.foodease.domain.MenuItem;
 import com.foodease.domain.Order;
 import com.foodease.domain.OrderType;
 import com.foodease.domain.Payment;
+import com.foodease.domain.PaymentMethod;
 import com.foodease.domain.Receipt;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -61,7 +62,7 @@ public class OrderService {
         }
 
         Bill bill = calculateBill(order);
-        Payment payment = Payment.create(bill.total(), method, amountTendered);
+        Payment payment = PaymentMethod.from(method).charge(bill.total(), amountTendered);
         String receiptNumber = UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
 
         return new Receipt(receiptNumber, order.customer(), order.type(), bill.subtotal(), bill.tax(),
