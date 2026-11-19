@@ -4,6 +4,7 @@ import com.foodease.application.OrderService;
 import com.foodease.domain.*;
 import java.awt.HeadlessException;
 import java.awt.print.PrinterException;
+import java.math.BigDecimal;
 
 public class ConsoleApp {
     private final ConsoleInput input;
@@ -122,13 +123,13 @@ public class ConsoleApp {
                 output.print("Choose cash, card, or wallet.");
                 continue;
             }
-            java.math.BigDecimal totalDue = orderService.calculateBill(order).total();
-            java.math.BigDecimal tendered = totalDue;
+            BigDecimal totalDue = orderService.calculateBill(order).total();
+            BigDecimal tendered = totalDue;
             if (method.equalsIgnoreCase("cash")) {
                 while (true) {
                     String amount = input.readLine("Cash received: ");
                     try {
-                        tendered = new java.math.BigDecimal(amount);
+                        tendered = new BigDecimal(amount);
                         if (tendered.compareTo(totalDue) >= 0) break;
                         output.print("Cash received must cover the total.");
                     } catch (NumberFormatException ex) {
