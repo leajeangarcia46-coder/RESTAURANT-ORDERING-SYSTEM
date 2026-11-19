@@ -46,7 +46,7 @@ public class ConsoleOutput {
     }
 
     public void showOrderSetup(Order order) {
-        CenteredConsole.beginScreen(order.type() == OrderType.DINE_IN ? 13 : 12);
+        CenteredConsole.beginScreen(order.type() == OrderType.DINE_IN ? 18 : 17);
         printFrameBorder();
         printFrameLine("ORDER DETAILS");
         printFrameBorder();
@@ -115,7 +115,7 @@ public class ConsoleOutput {
         for (MenuCategory category : MenuCategory.values()) {
             if (menu.stream().anyMatch(item -> item.category() == category)) categoryCount++;
         }
-        CenteredConsole.beginScreen(11 + menu.size() + (2 * categoryCount));
+        CenteredConsole.beginScreen(14 + menu.size() + (2 * categoryCount));
         printMenuBorder();
         printMenuTitle("RESTAURANT MENU");
         printMenuBorder();
@@ -135,47 +135,65 @@ public class ConsoleOutput {
     }
 
     public void showReceipt(Receipt receipt, Order order) {
-        int receiptLines = 19 + order.items().size();
+        int receiptLines = 26; // Includes the paper-receipt prompt that follows this panel.
         if (receipt.orderType() == OrderType.DINE_IN) receiptLines++;
-        receiptLines += (int) order.items().stream().filter(item -> !item.note().isBlank()).count();
+        receiptLines += wrappedLineCount("Receipt no.: " + receipt.receiptNumber()) - 1;
+        receiptLines += wrappedLineCount("Customer: " + receipt.customer().name()) - 1;
+        receiptLines += wrappedLineCount("Issued: " + receipt.issuedAt().toString().replace('T', ' ')) - 1;
+        int itemNumber = 1;
+        for (OrderItem item : order.items()) {
+            receiptLines += wrappedLineCount(itemNumber++ + ") " + item.menuItem().name()) + 2;
+            if (!item.note().isBlank()) receiptLines += wrappedLineCount("   Special request: " + item.note());
+        }
         if (receipt.payment().method().equals("cash")) receiptLines += 2;
         CenteredConsole.beginScreen(receiptLines);
-        System.out.println("\n============================================================");
-        System.out.println("                  FOODEASE RESTAURANT");
-        System.out.println("                       RECEIPT");
-        System.out.println("Order No.: " + receipt.receiptNumber());
-        System.out.println("Customer: " + receipt.customer().name());
-        System.out.println("Order type: " + orderTypeLabel(receipt.orderType()));
+        System.out.println();
+        printFrameBorder();
+        printFrameLine("FOODEASE RESTAURANT");
+        printFrameLine("CUSTOMER RECEIPT");
+        printFrameBorder();
+        printWrappedFrameLines("Receipt no.: " + receipt.receiptNumber());
+        printWrappedFrameLines("Customer: " + receipt.customer().name());
+        printLeftFrameLine("Order type: " + orderTypeLabel(receipt.orderType()));
         if (receipt.orderType() == OrderType.DINE_IN) {
-            System.out.println("Table: " + order.tableNumber());
+            printLeftFrameLine("Table: " + order.tableNumber());
         }
-        System.out.println("Issued: " + receipt.issuedAt().toString().replace('T', ' '));
-        System.out.println("------------------------------------------------------------");
-        for (OrderItem item : order.items())
-            System.out.printf("%-30s %3d x %10s = %10s%n", item.menuItem().name(), item.quantity(),
-                    formatCurrency(item.unitPrice()), formatCurrency(item.subtotal()));
+        printWrappedFrameLines("Issued: " + receipt.issuedAt().toString().replace('T', ' '));
+        printFrameSeparator();
+        printFrameLine("ITEMIZED ORDER");
+        printFrameSeparator();
+        itemNumber = 1;
         for (OrderItem item : order.items()) {
-            if (!item.note().isBlank()) System.out.println("  Note: " + item.note());
+            printWrappedFrameLines(itemNumber++ + ") " + item.menuItem().name());
+            printLeftFrameLine("   Quantity: " + item.quantity() + " x " + formatCurrency(item.unitPrice()));
+            printLeftFrameLine("   Line total: " + formatCurrency(item.subtotal()));
+            if (!item.note().isBlank()) printWrappedFrameLines("   Special request: " + item.note());
         }
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("%-40s %10s%n", "Subtotal", formatCurrency(receipt.subtotal()));
-        System.out.printf("%-40s %10s%n", receipt.taxIncludedInPrices() ? "Tax included in prices" : "Tax",
-                formatCurrency(receipt.tax()));
-        System.out.printf("%-40s %10s%n", "Service charge", formatCurrency(receipt.serviceCharge()));
-        System.out.printf("%-40s %10s%n", "TOTAL DUE", formatCurrency(receipt.total()));
-        System.out.println("Payment: " + capitalize(receipt.payment().method()));
+        printFrameSeparator();
+        printFrameLine("PAYMENT SUMMARY");
+        printFrameSeparator();
+        printBillRow("Subtotal", receipt.subtotal());
+        printBillRow(receipt.taxIncludedInPrices() ? "Tax included in prices" : "Tax", receipt.tax());
+        printBillRow("Service charge", receipt.serviceCharge());
+        printBillRow("TOTAL DUE", receipt.total());
+        printLeftFrameLine("Payment method: " + capitalize(receipt.payment().method()));
         if (receipt.payment().method().equals("cash")) {
-            System.out.printf("%-40s %10s%n", "Cash received", formatCurrency(receipt.payment().amountTendered()));
-            System.out.printf("%-40s %10s%n", "Change", formatCurrency(receipt.payment().changeDue()));
+            printBillRow("Cash received", receipt.payment().amountTendered());
+            printBillRow("Change", receipt.payment().changeDue());
         }
-        System.out.println("============================================================");
+        printFrameBorder();
     }
 
     public void showCart(Order order, Bill bill) {
+        showCart(order, bill, 11);
+    }
+
+    /** The trailing row count includes the next prompt or action panel on this screen. */
+    public void showCart(Order order, Bill bill, int trailingRows) {
         int cartLines = order.items().isEmpty() ? 15 : 13 + (2 * order.items().size());
         if (order.type() == OrderType.DINE_IN) cartLines++;
         cartLines += (int) order.items().stream().filter(item -> !item.note().isBlank()).count();
-        CenteredConsole.beginScreen(cartLines);
+        CenteredConsole.beginScreen(cartLines + trailingRows);
         System.out.println();
         printFrameBorder();
         printFrameLine("CURRENT ORDER");
@@ -235,6 +253,20 @@ public class ConsoleOutput {
         printLeftFrameLine(remaining);
     }
 
+    private int wrappedLineCount(String text) {
+        int width = CONSOLE_WIDTH - 4;
+        int count = 0;
+        String remaining = text;
+        do {
+            count++;
+            if (remaining.length() <= width) break;
+            int breakAt = remaining.lastIndexOf(' ', width);
+            if (breakAt <= 0) breakAt = width;
+            remaining = "  " + remaining.substring(breakAt).trim();
+        } while (true);
+        return count;
+    }
+
     public void showTotal(java.math.BigDecimal total) {
         System.out.println("Current total: " + formatCurrency(total));
     }
@@ -259,8 +291,12 @@ public class ConsoleOutput {
     }
 
     private void printCentered(String text) {
-        int leftPadding = Math.max(0, (CONSOLE_WIDTH - text.length()) / 2);
-        System.out.println(ConsoleTheme.sage(" ".repeat(leftPadding) + text));
+        int visibleLength = Math.min(text.length(), CONSOLE_WIDTH);
+        String visibleText = text.substring(0, visibleLength);
+        int leftPadding = (CONSOLE_WIDTH - visibleLength) / 2;
+        int rightPadding = CONSOLE_WIDTH - visibleLength - leftPadding;
+        System.out.println(ConsoleTheme.sage(" ".repeat(leftPadding) + visibleText
+                + " ".repeat(rightPadding)));
     }
 
     private void printFrameBorder() {
