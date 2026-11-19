@@ -1,25 +1,78 @@
-# FoodEase Restaurant Ordering System
+# FoodEase Restaurant Ordering and Checkout System
 
-A Java 21 console application for dine-in and takeout restaurant orders, with a categorized menu, editable cart, item notes, checkout totals, payment recording, and printable receipts.
+## About the project
 
-## Run in NetBeans
+FoodEase is a Java console application I made for my Object-Oriented Programming project. It helps a customer place a dine-in or takeout order, review and update the cart, pay for the order, and receive a receipt. The terminal screens use a centered layout and simple colors to make the steps easier to follow.
 
-Open this project in NetBeans and choose **Run Project**. The configured entry point is `com.foodease.Main`.
+## What the system can do
 
-## Run from a terminal
+- Create dine-in orders with a table number or takeout orders.
+- Display the restaurant menu by category and price.
+- Add several menu items, choose quantities, and enter optional special requests.
+- View the cart, remove an item, or change its quantity.
+- Check out using cash, card, or digital wallet.
+- Validate cash received and calculate change.
+- Show an itemized receipt and optionally open the computer's print dialog.
 
-From the project directory, compile and run with:
+## Requirements
 
-```powershell
-$sources = Get-ChildItem -Path src -Recurse -Filter *.java | ForEach-Object { $_.FullName }
-javac -encoding UTF-8 -d build/classes $sources
-java -cp build/classes com.foodease.Main
+- Java Development Kit (JDK) 21
+- Apache NetBeans, if you want to open and run the project in the IDE
+- Windows for the included `run.bat` launcher and its colored, centered terminal display
+
+## Run the project
+
+### Using NetBeans
+
+Open the project folder in NetBeans and choose **Run Project**. The project entry point is `com.foodease.Main`, and the configured run action launches `run.bat`.
+
+### Using the Windows launcher
+
+Open a terminal in the project folder and run:
+
+```bat
+run.bat
 ```
 
-## Order flow
+The launcher compiles the Java source and starts FoodEase. Keep the terminal open while placing the order.
 
-Enter a customer name and choose dine-in or takeout. Dine-in orders request a table number. Use **1** to enter add mode; the menu is grouped by category and you can add multiple items before entering **B**. Each item can include an optional special request. Use **2** to review the cart, **3** to remove a cart line, **4** to change its quantity, **5** to check out, or **6** to cancel. Checkout accepts cash, card, or digital wallet. Cash orders ask for the amount received and show change on the receipt. A timestamped receipt includes an order number, item details, subtotal, tax, service charge, and total. After checkout, choose **Y** at the paper receipt prompt to select a printer.
+### Compile and run manually
 
-The default pricing policy assumes menu prices include 12% VAT and applies no service charge. Adjust the policy passed to `OrderService` to use the rates and tax treatment configured for your restaurant. This is a sample application setting; confirm the appropriate treatment for your business.
+From the project folder in PowerShell:
 
-Menu data is held in memory in `InMemoryMenuRepository` and resets when the application exits. Card and wallet payments are recorded in the console and are not processed by a payment provider.
+```powershell
+javac -encoding UTF-8 -sourcepath src -d build\classes src\com\foodease\Main.java
+java -cp build\classes com.foodease.Main
+```
+
+## How to place an order
+
+1. Enter a customer name.
+2. Choose **1** for dine-in or **2** for takeout. Dine-in orders also ask for a table number.
+3. Choose **1** from the order options to add items. Enter a menu number, quantity, and optional request. Enter **B** when you are finished adding items.
+4. Use the order options to review the cart (**2**), remove an item (**3**), change a quantity (**4**), check out (**5**), or cancel (**6**).
+5. At checkout, choose cash, card, or wallet. Cash orders ask how much was received.
+6. Review the receipt. Answer **Y** if you want to open the printer dialog.
+
+## Object-oriented design
+
+I organized the code into packages so each part has a clear job:
+
+- `com.foodease.console` handles keyboard input, terminal screens, layout, and receipt printing.
+- `com.foodease.application` coordinates order operations and calculates checkout totals.
+- `com.foodease.domain` contains the customer, order, menu, bill, payment, and receipt data.
+- `com.foodease.data` provides the menu repository and its in-memory menu.
+
+The project applies the main OOP ideas:
+
+- **Abstraction:** `MenuRepository` and `PaymentMethod` describe the operations the rest of the program needs.
+- **Inheritance:** `CashPaymentMethod` and `ElectronicPaymentMethod` extend the shared `PaymentMethod` type.
+- **Polymorphism:** each payment method handles checkout through its own `charge` implementation.
+- **Encapsulation:** domain objects validate their data, and service classes keep their internal state private.
+
+## Current limitations
+
+- Menu and order data are kept in memory, so they reset when the application closes.
+- Card and wallet payments are recorded by the program; they are not sent to a real payment provider.
+- The default pricing policy treats menu prices as including 12% VAT and adds no service charge. This is a project default and may need to be changed for a real restaurant.
+- The centered color display is intended for a Windows terminal that supports ANSI colors. Other terminals may display the same content without color or centering.
